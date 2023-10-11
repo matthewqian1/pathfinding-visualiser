@@ -1,7 +1,16 @@
 import './Node.css';
+import { Component } from "react";
 
-function Node() {
-    return <div className='node'></div>
+export default class Node extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {};
+    }
+
+    render() {
+        const {isStart, isFinish} = this.props;
+        const extraClassName = isFinish ? 'node-finish': isStart ? 'node-start': '';
+        const classes = `node ${extraClassName}`
+        return <div className={classes}></div>
+    }
 }
-
-export default Node;

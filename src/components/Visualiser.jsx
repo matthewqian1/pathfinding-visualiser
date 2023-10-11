@@ -15,7 +15,13 @@ export default class Visualiser extends Component {
         for (let row = 0; row < 10; row++) {
         const currentRow = [];
         for (let col = 0; col < 10; col++) {
-            currentRow.push([]);
+            const node = {
+                col,
+                row,
+                isStart: row === 0 && col === 0,
+                isFinish: row === 9 && col === 9
+            }
+            currentRow.push(node);
         }
         nodes.push(currentRow);
         this.setState({nodes});
@@ -29,8 +35,15 @@ export default class Visualiser extends Component {
         return (
             <div className="grid">
                 {nodes.map((row, rowIdx) => {
-                    return <div> 
-                        {row.map((node, nodeIdx) => <Node></Node>)}
+                    return <div key={rowIdx}> 
+                        {row.map((node, nodeIdx) =>    
+                        { 
+                            const {isStart, isFinish} = node;
+                            return (<Node 
+                            isStart={isStart}
+                            isFinish={isFinish}
+                            ></Node>)})}
+                    
                     </div>
 
                 })}

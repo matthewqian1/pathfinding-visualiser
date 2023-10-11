@@ -3,8 +3,8 @@ import './Grid.css'
 import Node from './Node';
 
 function Grid () {
-    const GRID_ROW_LENGTH = 10;
-    const GRID_COL_LENGTH = 10;
+    const GRID_ROW_LENGTH = 50;
+    const GRID_COL_LENGTH = 50;
     const grid = [];
     for (let row = 0; row < GRID_ROW_LENGTH; row++) {
         const currentRow = [];
