@@ -122,13 +122,14 @@ export default class Visualiser extends Component {
         return (
             <div>
                 <button onClick={() => this.djikstras(this.state)}>Start</button>
+                <button onClick={() => this.componentDidMount()}>Reset</button>
             <div className="grid">
                 {nodes.map((row, rowIdx) => {
                     return <div key={rowIdx}> 
                         {row.map((node, nodeIdx) =>    
                         { 
                             const {isStart, isFinish, isVisited, shortestPath} = node;
-                            return (<Node 
+                            return (<Node onClick = {() => console.log('hello')}
                             isStart={isStart}
                             isFinish={isFinish}
                             isVisited={isVisited}
