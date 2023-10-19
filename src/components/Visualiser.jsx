@@ -11,22 +11,33 @@ export default class Visualiser extends Component {
             nodes: [],
             numRows: 10,
             numCols: 10,
-            start: [0, 0],
-            finish: [9, 9]
+            start: [],
+            finish: []
         };
     }
 
     componentDidMount() {
+        this.setBoard();
+    }
+
+    reset() {
+        const start = [];
+        const finish = [];
+        this.setState({start, finish});
+        this.setBoard();
+    }
+
+    setBoard() {
         const nodes = [];
-        const {numRows, numCols, start, finish} = this.state;
+        const {numRows, numCols} = this.state;
         for (let row = 0; row < numRows; row++) {
         const currentRow = [];
         for (let col = 0; col < numCols; col++) {
             const node = {
                 col,
                 row,
-                isStart: row === start[0] && col === start[1],
-                isFinish: row === finish[0] && col === finish[1],
+                isStart: false,
+                isFinish: false,
                 isVisited: false,
                 distance: Infinity,
                 parent: null,
@@ -52,6 +63,9 @@ export default class Visualiser extends Component {
             await delay(10);
             this.setState({nodes});
             const currentNode = queue.dequeue();
+            if (currentNode.isFinish) {
+                break;
+            }
             if (currentNode.isVisited) {
                 continue;
             }
@@ -66,11 +80,12 @@ export default class Visualiser extends Component {
             }
 
             
+            
         }
         console.log('done djikstras');
         this.buildPath(nodes[finish[0]][finish[1]], nodes);
         console.log('done build path');
-        console.log(nodes);
+
         
     }
 
@@ -112,9 +127,25 @@ export default class Visualiser extends Component {
         return false;
     }
 
-
-
-
+    setPathStartFinish(x, y) {
+        var {start, finish, nodes} = this.state;
+        if (start.length === 2 && finish.length === 2) {
+            return;
+        }
+        let node = nodes[x][y];
+        if (start.length !== 2) {
+            start = [x, y];
+            node.isStart = true;
+            node.distance = 0;
+            console.log(`start has been set to [${start[0]}][${start[1]}]`);
+        } else if (finish.length !== 2) {
+            finish = [x, y];
+            node.isFinish = true;
+            console.log(`finish has been set to [${finish[0]}][${finish[1]}]`);
+        }
+        nodes[x][y] = node;
+        this.setState({start, finish, nodes});
+    }
     
 
     render() {
@@ -122,19 +153,26 @@ export default class Visualiser extends Component {
         return (
             <div>
                 <button onClick={() => this.djikstras(this.state)}>Start</button>
-                <button onClick={() => this.componentDidMount()}>Reset</button>
+                <button onClick={() => this.reset()}>Reset</button>
             <div className="grid">
                 {nodes.map((row, rowIdx) => {
                     return <div key={rowIdx}> 
                         {row.map((node, nodeIdx) =>    
                         { 
                             const {isStart, isFinish, isVisited, shortestPath} = node;
-                            return (<Node onClick = {() => console.log('hello')}
+                            return (
+                                <span onClick={() => this.setPathStartFinish(rowIdx, nodeIdx)}>
+                            <Node
                             isStart={isStart}
                             isFinish={isFinish}
                             isVisited={isVisited}
                             shortestPath={shortestPath}
-                            ></Node>)})}
+                            ></Node>
+                            </span>
+                            )
+                        }
+                        )
+                        }
                     
                     </div>
 
