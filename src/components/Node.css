@@ -12,6 +12,10 @@
   .node-start {
     background-color: green;
   }
+
+  .node-block {
+    background-color: black;
+  }
   
   .node-visited {
     animation-name: visitedAnimation;

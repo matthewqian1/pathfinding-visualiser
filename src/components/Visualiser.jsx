@@ -9,10 +9,12 @@ export default class Visualiser extends Component {
         super(props);
         this.state = {
             nodes: [],
-            numRows: 10,
-            numCols: 10,
+            numRows: 20,
+            numCols: 30,
             start: [],
-            finish: []
+            finish: [],
+            addBlockMode: false,
+            addBlockLive: false
         };
     }
 
@@ -41,7 +43,8 @@ export default class Visualiser extends Component {
                 isVisited: false,
                 distance: Infinity,
                 parent: null,
-                shortestPath: false
+                shortestPath: false,
+                isBlock: false
             }
             node.distance = node.isStart ? 0 : Infinity;
 
@@ -63,10 +66,7 @@ export default class Visualiser extends Component {
             await delay(10);
             this.setState({nodes});
             const currentNode = queue.dequeue();
-            if (currentNode.isFinish) {
-                break;
-            }
-            if (currentNode.isVisited) {
+            if (currentNode.isVisited || currentNode.isBlock || currentNode.isFinish) {
                 continue;
             }
             currentNode.isVisited = true;
@@ -133,6 +133,9 @@ export default class Visualiser extends Component {
             return;
         }
         let node = nodes[x][y];
+        if (node.isBlock) {
+            return;
+        }
         if (start.length !== 2) {
             start = [x, y];
             node.isStart = true;
@@ -146,29 +149,58 @@ export default class Visualiser extends Component {
         nodes[x][y] = node;
         this.setState({start, finish, nodes});
     }
+
+    toggleBlockButton() {
+        this.setState({addBlockMode: !this.state.addBlockMode})
+    }
+
+    addBlockLive(x, y) {
+        var {addBlockMode} = this.state;
+        if (!addBlockMode) {
+            return;
+        }
+        this.setState({addBlockLive: true});
+        this.convertToBlock(x, y);
+    }
     
+    convertToBlock(x, y) {
+        var {addBlockLive, nodes} = this.state;
+        if (!addBlockLive) {
+            return;
+        }
+        let node = nodes[x][y];
+        node.isBlock = true;
+        this.setState({nodes});
+    }
 
     render() {
-        const {nodes} = this.state;
+        const {nodes, addBlockMode} = this.state;
+        let blockButton =  addBlockMode ? "blockButtonOn" : "blockButtonOff";
         return (
             <div>
                 <button onClick={() => this.djikstras(this.state)}>Start</button>
                 <button onClick={() => this.reset()}>Reset</button>
+                <button className={blockButton} onClick={() => this.toggleBlockButton()}>Add Blocks</button>
             <div className="grid">
                 {nodes.map((row, rowIdx) => {
                     return <div key={rowIdx}> 
                         {row.map((node, nodeIdx) =>    
                         { 
-                            const {isStart, isFinish, isVisited, shortestPath} = node;
+                            const {isStart, isFinish, isVisited, shortestPath, isBlock} = node;
                             return (
-                                <span onClick={() => this.setPathStartFinish(rowIdx, nodeIdx)}>
-                            <Node
-                            isStart={isStart}
-                            isFinish={isFinish}
-                            isVisited={isVisited}
-                            shortestPath={shortestPath}
-                            ></Node>
-                            </span>
+                                <span 
+                                onClick={() => this.setPathStartFinish(rowIdx, nodeIdx)} 
+                                onMouseDown={() => this.addBlockLive(rowIdx, nodeIdx)} 
+                                onMouseOver={() => this.convertToBlock(rowIdx, nodeIdx)} 
+                                onMouseUp={() => this.setState({addBlockLive: false})}>
+                                    <Node
+                                    isBlock={isBlock}
+                                    isStart={isStart}
+                                    isFinish={isFinish}
+                                    isVisited={isVisited}
+                                    shortestPath={shortestPath}
+                                    ></Node>
+                                </span>
                             )
                         }
                         )
