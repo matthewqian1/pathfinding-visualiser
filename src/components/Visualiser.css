@@ -1,11 +1,60 @@
 .grid {
-    margin: 100px 0 0;
+    margin: 50px 0 0;
   }
 
 .blockButtonOn {
-  background-color: green;
+  background-color: darkgray;
 }
 
 .blockButtonOff {
   background-color: white;
+}
+
+.startButton {
+  background-color: lawngreen;
+  &:hover {
+    background-color: green;
+  }
+}
+
+button {
+  background-color: "#3f51b5";
+  font-weight: bold;
+  color: black;
+  padding: 5px 15px;
+  border-radius: 5px;
+  outline: 0;
+  text-transform: uppercase;
+  margin: 20px;
+  cursor: pointer;
+  box-shadow: 0px 2px 2px lightgray;
+  transition: ease background-color 250ms;
+  &:hover {
+    background-color: darkgrey;
+  }
+}
+
+button:disabled,
+button[disabled]{
+  opacity: 0.2;
+}
+
+.disabledButton {
+  opacity: 0.2;
+  cursor: not-allowed;
+}
+
+.controlBar {
+  background-color: grey;
+}
+
+.prompt {
+  font-weight: bold;
+}
+
+.title {
+  float: left;
+  padding-top: 1%;
+  font-size: 160%;
+  font-weight: bold;
 }

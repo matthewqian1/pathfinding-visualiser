@@ -10,7 +10,7 @@ export default class Node extends Component {
     render() {
         const {isBlock, isStart, isFinish, isVisited, shortestPath} = this.props;
         const extraClassName = isBlock ? 'node-block' : isFinish ? 'node-finish': isStart ? 'node-start': shortestPath ? 'node-shortest-path' : isVisited ? 'node-visited' : '';
-        const classes = `node ${extraClassName}`
+        const classes = `node ${extraClassName}`;
         return <div className={classes}></div>
     }
 }

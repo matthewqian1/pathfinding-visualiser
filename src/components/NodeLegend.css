@@ -1,0 +1,10 @@
+.legend{
+  margin: auto;
+  width: 50%;
+  padding: 10px;
+}
+
+.legendComponent{
+    display: inline-block;
+    padding-left: 5%;
+}

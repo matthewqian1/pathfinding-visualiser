@@ -1,5 +1,6 @@
 import { Component } from "react";
 import Node from "./Node";
+import NodeLegend from "./NodeLegend";
 import PriorityQueue from "./PriorityQueue";
 import './Visualiser.css';
 
@@ -9,12 +10,13 @@ export default class Visualiser extends Component {
         super(props);
         this.state = {
             nodes: [],
-            numRows: 20,
-            numCols: 30,
+            numRows: 25,
+            numCols: 40,
             start: [],
             finish: [],
             addBlockMode: false,
-            addBlockLive: false
+            addBlockLive: false,
+            algorithmInProgress: false,
         };
     }
 
@@ -59,15 +61,20 @@ export default class Visualiser extends Component {
     djikstras = async(state) => {
         const delay = (ms) => new Promise((resolve, reject) => setTimeout(resolve, ms));
         const {start, finish, nodes} = state;
+        this.setState({algorithmInProgress: true});
         var queue = new PriorityQueue();
     
         queue.enqueue([nodes[start[0]][start[1]], 0]);
         while (!queue.isEmpty()) {
-            await delay(10);
+            await delay(1);
             this.setState({nodes});
             const currentNode = queue.dequeue();
-            if (currentNode.isVisited || currentNode.isBlock || currentNode.isFinish) {
+            if (currentNode.isVisited || currentNode.isBlock ) {
                 continue;
+            }
+
+            if (currentNode.isFinish) {
+                break;
             }
             currentNode.isVisited = true;
             const dist = currentNode.distance + 1;
@@ -85,6 +92,7 @@ export default class Visualiser extends Component {
         console.log('done djikstras');
         this.buildPath(nodes[finish[0]][finish[1]], nodes);
         console.log('done build path');
+        this.setState({algorithmInProgress: false});
 
         
     }
@@ -142,6 +150,9 @@ export default class Visualiser extends Component {
             node.distance = 0;
             console.log(`start has been set to [${start[0]}][${start[1]}]`);
         } else if (finish.length !== 2) {
+            if (start[0] === x && start[1] === y) {
+                return;
+            }
             finish = [x, y];
             node.isFinish = true;
             console.log(`finish has been set to [${finish[0]}][${finish[1]}]`);
@@ -173,14 +184,58 @@ export default class Visualiser extends Component {
         this.setState({nodes});
     }
 
+    getRandomInt(max) {
+        return Math.floor(Math.random() * max);
+    }
+
+    generateRandomMaze() {
+        var {numRows, numCols, nodes} = this.state;
+        for (let i = 0; i < numRows; i++) {
+            for (let j = 0; j < numCols; j++) {
+                let node = nodes[i][j];
+                if (node.isStart || node.isFinish) {
+                    continue;
+                }
+                if (this.getRandomInt(4) === 1) {
+                    node.isBlock = true;
+                    nodes[i][j] = node;
+                }
+            }
+        }
+        this.setState({nodes});
+    }
+
+    generateUserPrompt(start, finish, addBlockMode, algorithmInProgress) {
+        if (start.length === 0 || finish.length === 0) {
+            return '**Please assign a start and finish node by clicking on a node on the grid';
+        }
+
+        if (addBlockMode) {
+            return '**Add block mode on - clicking/dragging on the grid will convert nodes to a block';
+        }
+
+        if (algorithmInProgress) {
+            return '**Algorithm visualisation in progress';    
+        }
+
+        return '';
+    }
+
     render() {
-        const {nodes, addBlockMode} = this.state;
+        const {nodes, start, finish, addBlockMode, algorithmInProgress} = this.state;
         let blockButton =  addBlockMode ? "blockButtonOn" : "blockButtonOff";
+        let prompt = this.generateUserPrompt(start, finish, addBlockMode, algorithmInProgress);
         return (
             <div>
-                <button onClick={() => this.djikstras(this.state)}>Start</button>
-                <button onClick={() => this.reset()}>Reset</button>
-                <button className={blockButton} onClick={() => this.toggleBlockButton()}>Add Blocks</button>
+                <div className="controlBar">
+                <div className="title">Pathfinding Visualiser</div>
+                <button className="startButton" onClick={() => this.djikstras(this.state)} disabled={algorithmInProgress || start.length === 0 || finish.length === 0}>Start</button>
+                <button onClick={() => this.reset()} disabled={algorithmInProgress}>Reset</button>
+                <button className={blockButton} onClick={() => this.toggleBlockButton()} disabled={algorithmInProgress || start.length === 0 || finish.length === 0}>Add Blocks</button>
+                <button onClick={() => this.generateRandomMaze()} disabled={algorithmInProgress || start.length === 0 || finish.length === 0}>Generate Random Maze</button>
+            </div>
+            <NodeLegend></NodeLegend>
+            <div className="prompt">{prompt}</div>
             <div className="grid">
                 {nodes.map((row, rowIdx) => {
                     return <div key={rowIdx}> 
