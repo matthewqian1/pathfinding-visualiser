@@ -10,5 +10,7 @@ While my professional experience is backend dominant, this was also a great way 
 Currently focused on illustrating how Djikstra's algorithm searches for the shortest path in a weighted graph between a start and destination node.
 
 # Demo
-![Pathfinding Visualiser Demo](https://github.com/matthewqian1/pathfinding-visualiser/assets/66478998/5a64cb2a-66f5-4c96-b272-9fe763f066fc)
+https://github.com/matthewqian1/pathfinding-visualiser/assets/66478998/464071cd-d0f0-4500-a46a-7e40f9d9dbd0
+
+
 
